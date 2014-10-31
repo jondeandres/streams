@@ -3,6 +3,7 @@ require 'json'
 require 'redis'
 require 'active_support'
 require 'active_support/all'
+require 'securerandom'
 
 require 'streams_app/sse'
 
@@ -23,14 +24,24 @@ class App < Sinatra::Base
     erb :index
   end
 
-  get '/_streams/:channel' do
+  post '/_streams' do
+    path = SecureRandom.hex(40)
+    channels = Array(params[:channels])
+
+    redis.sadd("path:#{path}", channels)
+
+    { path: path }.to_json
+  end
+
+  get '/_streams/:path' do
     content_type :stream
+    channels = redis.smembers("path:#{params[:path]}")
 
     stream do |out|
       begin
         sse = StreamsApp::SSE.new(out, event: 'event')
 
-        redis.subscribe(params[:channel]) do |on|
+        redis.subscribe(channels) do |on|
           on.message do |_, msg|
             data = JSON.parse(msg)
             sse << data

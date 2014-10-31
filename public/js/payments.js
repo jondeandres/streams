@@ -1,4 +1,4 @@
-(function(w) {
+(function(w, $) {
 	var heatmapData = [];
 	var heatmap;
 
@@ -48,8 +48,17 @@
 
 	function initSource() {
 		var channel = document.getElementsByTagName('body')[0].getAttribute('data-channel');
-		var source = new EventSource('/_streams/' + channel);
-		source.addEventListener('event', addPoint);
+
+    $.ajax({
+      type: 'POST',
+      url: '/_streams',
+      data: { channels: ['payments'] },
+      dataType: 'json',
+      success: function(data) {
+		    var source = new EventSource('/_streams/' + data.path);
+		    source.addEventListener('event', addPoint);
+      }
+    });
 	}
 
 	function init() {
@@ -59,4 +68,4 @@
 
 	init();
 
-})(window);
+})(window, $);

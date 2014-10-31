@@ -13,7 +13,7 @@ def spawn_events(redis)
     sleep 1
     lat = base_lat + rand(-30..30).to_f / 10
     lng = base_lng + rand(-30..30).to_f / 10
-    redis.publish('payments', JSON.dump({point: { lat: lat, lng: lng}}))
+    redis.publish('payments', JSON.dump({point: { lat: lat, lng: lng }}))
   end
 end
 
