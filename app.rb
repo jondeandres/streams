@@ -14,7 +14,7 @@ class App < Sinatra::Base
 
   helpers do
     def redis
-      @redis ||= Redis.new
+      @redis ||= Redis.new(url: ENV['REDIS_URL'])
     end
   end
 
