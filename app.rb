@@ -13,8 +13,16 @@ class App < Sinatra::Base
   end
 
   helpers do
+    def redis_options
+      {
+        host: ENV['REDIS_PORT_6379_TCP_ADDR'],
+        port: ENV['REDIS_PORT_6379_TCP_PORT'],
+        password: ENV['REDIS_PASSWORD']
+      }
+    end
+
     def redis
-      @redis ||= Redis.new(url: ENV['REDIS_URL'])
+      @redis ||= Redis.new(redis_options)
     end
   end
 
