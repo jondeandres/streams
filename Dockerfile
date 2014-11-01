@@ -20,7 +20,7 @@ ADD id_rsa /root/.ssh/id_rsa
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-RUN git clone git@github.com:jondeandres/streams /root/streams
+RUN a=1 git clone git@github.com:jondeandres/streams /root/streams
 RUN cd /root/streams; bundle install
 
 EXPOSE 4567
