@@ -4,6 +4,7 @@ require 'redis'
 require 'active_support'
 require 'active_support/all'
 require 'securerandom'
+require 'geokit'
 
 require 'streams_app/sse'
 
@@ -51,8 +52,20 @@ class App < Sinatra::Base
 
         redis.subscribe(channels) do |on|
           on.message do |_, msg|
-            data = JSON.parse(msg)
-            sse << data
+            begin
+              parsed_msg = JSON.parse(msg)
+              geo_data = Geokit::Geocoders::MultiGeocoder.geocode(parsed_msg['ip'])
+              data = {
+                point: {
+                  lat: geo_data.lng,
+                  lng: geo_data.lat
+                }
+              }
+
+              sse << data
+            rescue => e
+              $stdout.write("#{e}\n")
+            end
           end
         end
       ensure
