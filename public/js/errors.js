@@ -52,7 +52,7 @@
     $.ajax({
       type: 'POST',
       url: '/_streams',
-      data: { channels: ['payments'] },
+      data: { channels: ['errors'] },
       dataType: 'json',
       success: function(data) {
 		    var source = new EventSource('/_streams/' + data.path);
