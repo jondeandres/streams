@@ -4,7 +4,7 @@ require 'redis'
 require 'active_support'
 require 'active_support/all'
 require 'securerandom'
-require 'geokit'
+require 'maxminddb'
 
 require 'streams_app/sse'
 
@@ -24,6 +24,10 @@ class App < Sinatra::Base
 
     def redis
       @redis ||= Redis.new(redis_options)
+    end
+
+    def ip_db
+      @ip_db ||= MaxMindDB.new('./GeoLite2-City.mmdb')
     end
   end
 
@@ -53,16 +57,19 @@ class App < Sinatra::Base
         redis.subscribe(channels) do |on|
           on.message do |_, msg|
             begin
-              parsed_msg = JSON.parse(msg)
-              geo_data = Geokit::Geocoders::MultiGeocoder.geocode(parsed_msg['ip'])
-              data = {
-                point: {
-                  lat: geo_data.lng,
-                  lng: geo_data.lat
-                }
-              }
+              ip = JSON.parse(msg)['ip']
+              location = ip_db.lookup(ip).location
 
-              sse << data
+              if location
+                data = {
+                  point: {
+                    lat: location.latitude,
+                    lng: location.longitude
+                  }
+                }
+
+                sse << data
+              end
             rescue => e
               $stdout.write("#{e}\n")
             end

@@ -34,8 +34,8 @@
 		var sanFrancisco = new google.maps.LatLng(37.774546, -122.433523);
 
 		var map = new google.maps.Map(document.getElementById('map-canvas'), {
-			center: spain,
-			zoom: 7,
+			center: sanFrancisco,
+			zoom: 2,
 			mapTypeId: google.maps.MapTypeId.SATELLITE
 		});
 

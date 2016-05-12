@@ -6,14 +6,11 @@ require 'json'
 redis = Redis.new
 
 def spawn_events(redis)
-  base_lat = 40.2085
-  base_lng = -1.713
+  loop do
+    sleep 0.2
 
-  100.times do
-    sleep 1
-    lat = base_lat + rand(-30..30).to_f / 10
-    lng = base_lng + rand(-30..30).to_f / 10
-    redis.publish('payments', JSON.dump({point: { lat: lat, lng: lng }}))
+    ip = 4.times.to_enum.map {|_| rand(256).to_s }.join('.')
+    redis.publish('errors', JSON.dump(ip: ip))
   end
 end
 
